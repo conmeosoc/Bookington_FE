@@ -1,0 +1,16 @@
+﻿body{
+    overflow:auto;
+}
+img, svg {
+    float: right;
+    vertical-align: middle;
+}
+
+.h1, h1 {
+    color: blue;
+    font-size: calc(1.375rem + 1.5vw);
+    vertical-align: middle;
+    line-height: 52px;
+    padding: 25% 0;
+    margin: auto;
+}

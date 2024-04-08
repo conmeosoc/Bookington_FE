@@ -1,0 +1,103 @@
+﻿<!--
+	Author: W3layouts
+	Author URL: http://w3layouts.com
+	License: Creative Commons Attribution 3.0 Unported
+	License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+<head>
+
+<title>Bookinton:Login</title>
+
+<!-- Meta-Tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="keywords" content="Existing Login Form Widget Responsive, Login Form Web Template, Flat Pricing Tables, Flat Drop-Downs, Sign-Up Web Templates, Flat Web Templates, Login Sign-up Responsive Web Template, Smartphone Compatible Web Template, Free Web Designs for Nokia, Samsung, LG, Sony Ericsson, Motorola Web Design">
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //Meta-Tags -->
+
+<link href=@Url.Content("/Asset/css/popuo-box.css") rel="stylesheet" type="text/css" media="all" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+ <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+
+<!-- Style --> <link rel="stylesheet" href=@Url.Content("~/Asset/css/style.css") type="text/css" media="all">
+
+<!-- Fonts -->
+<script src="https://kit.fontawesome.com/0e8d7b26ea.js" crossorigin="anonymous"></script>
+<!-- //Fonts -->
+
+</head>
+<!-- //Head -->
+
+<!-- Body -->
+<body>
+	@RenderBody()
+	<div class="wrapper">
+	<h1>BOOKINTON</h1>
+
+	<div class="w3layoutscontaineragileits">
+			<div class="form-sub-w3ls">
+					<i class="fa-solid fa-phone"></i>
+					<input id="phoneinput" type="tel" Name="Phone" placeholder="PHONE" required="">	
+			</div>
+			<div class="form-sub-w3ls">
+					<i class="fa-solid fa-key"></i>
+					<input id="passinput" type="password" Name="Password" placeholder="PASSWORD" required="">
+				<i class="far fa-eye" id="togglePassword" style="margin-left: -30px; cursor: pointer;color:darkslategray"></i>
+
+			</div>
+			<a style="color: white " href="#small-dialog1"> Forgot Password? </a>
+			<div class="aitssendbuttonw3ls">
+				<input type="submit" value="LOGIN" onclick="UserLogin()">
+				 
+				<div class="clear"></div>
+			</div>
+			
+	</div>
+	<div id="small-dialog1" class="mfp-hide">
+
+	</div>
+	</div>
+
+	<script type="text/javascript" src=@Url.Content("~/Asset/js/jquery-2.1.4.min.js")></script>
+	<script type="text/javascript" src=@Url.Content("~/Asset/js/site.js")></script>
+
+	<!-- pop-up-box-js-file -->  
+	<!--//pop-up-box-js-file -->
+	@*<script>
+		$(document).ready(function() {
+		$('.w3_play_icon,.w3_play_icon1,.w3_play_icon2').magnificPopup({
+			type: 'inline',
+			fixedContentPos: false,
+			fixedBgPos: true,
+			overflowY: 'auto',
+			closeBtnInside: true,
+			preloader: false,
+			midClick: true,
+			removalDelay: 300,
+			mainClass: 'my-mfp-zoom-in'
+		});
+
+		});
+	</script>*@
+	<script>
+		const togglePassword = document.querySelector('#togglePassword');
+		const password = document.querySelector('#passinput');
+
+		togglePassword.addEventListener('click', function (e) {
+			// toggle the type attribute
+			const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+			password.setAttribute('type', type);
+			// toggle the eye slash icon
+			this.classList.toggle('fa-eye-slash');
+		});
+	</script>
+
+</body>
+<!-- //Body -->
+
+</html>

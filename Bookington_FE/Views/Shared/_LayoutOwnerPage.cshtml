@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BookingtonFE</title>
+    <link rel="stylesheet" href=@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css") />
+    <link rel="stylesheet" href=@Url.Content("~/css/site.css") asp-append-version="true" />
+    <link rel="stylesheet" href=@Url.Content("~/BookingtonFE.styles.css") asp-append-version="true" />
+    <link rel="stylesheet" href=@Url.Content("~/css/style2.css")>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

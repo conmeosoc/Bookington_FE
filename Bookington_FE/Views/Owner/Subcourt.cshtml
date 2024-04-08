@@ -1,0 +1,555 @@
+﻿@{
+    ViewData["Title"] = "SubCourt";
+    Layout = "_LayoutOwner";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model SubCourtAllModel
+
+<link rel="stylesheet" href=@Url.Content("~/Asset/css/OwnerDropdown.css")>
+<link rel="stylesheet" href=@Url.Content("~/Asset/css/schedule.css")>
+<style>
+    .tab1s {
+        width: 100%;
+        display: inline-block;
+    }
+
+    /*----- Tab Links -----*/
+    .tab-link1s:after {
+        display: block;
+        clear: both;
+        content: '';
+    }
+
+
+    .tab-link1s li {
+        margin: 0;
+        float: left;
+        list-style: none;
+    }
+
+    .tab-link1s a {
+        padding: 9px 30px 5px 30px;
+        display: inline-block;
+        border-radius: 2px 2px 0px 0px;
+        background: #2E5C8A;
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFAD5C;
+        transition: all linear 0.3s;
+        width: 150px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+        .tab-link1s a:hover {
+            background: #FF3333;
+            color: #EBEBEB;
+            text-decoration: none;
+        }
+
+    li.active a, li.active a:hover {
+        background: #FFF;
+        color: #4C4C4C;
+    }
+
+    /*----- Content of Tabs -----*/
+    .tab-content {
+        width: 960px;
+        border-radius: 3px;
+        box-shadow: 0px 10px 10px rgba(0,0,0,0.45);
+        background: #fff;
+        margin-top: -16px;
+        padding: 15px;
+    }
+
+    .tab1 {
+        display: none;
+    }
+
+        .tab1.active {
+            display: block;
+        }
+
+</style>
+
+<section>
+    <div id="ManageYard" class="tabcontent" style="display:block">
+        
+        
+        <h2>Court: @Model.courtParent.Name</h2>
+        <button class="btn btn-primary" style="padding: 5px; margin-bottom:10px" onclick="showCreateSCourt('@Model.courtParent.Id')">Add a new subcourt</button>
+
+        <h5>Address: @Model.courtParent.Address, @Model.courtParent.DistrictName</h5>
+        <h5>Open At: @Model.courtParent.OpenAt</h5>
+        <h5>Close At: @Model.courtParent.CloseAt</h5>
+
+        <h3>Subcourt of court</h3>
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Create at</th>
+                  <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SubCourtDetails != null && Model.SubCourtDetails.Count > 0)
+                    @foreach (var item in Model.SubCourtDetails)
+                    {
+                        @if (!item.subcourtModel.IsDeleted)
+                        {
+                            <tr>
+                                <th>@item.subcourtModel.Id</th>
+                                <th>@item.subcourtModel.Name</th>
+                                <th>
+                                    @if(item.subcourtModel.CourtTypeId.Equals("1") )
+                                    {
+                                        <p>Acrylic</p>
+                                    }else if(item.subcourtModel.CourtTypeId.Equals("2"))
+                                    {
+                                        <p>Silicon PU</p>
+                                    }
+                                    else
+                                    {
+                                    <p>Wooden</p>
+                                    }
+                                </th>
+                                <th>@item.subcourtModel.CreateAt.ToString("dd-MM-yyyy")</th>
+                               <th>
+                                    <button class="btn btn-primary" onclick="DetailSubCourt('@item.subcourtModel.Id')">Details</button>
+                                    <button class="btn btn-danger" onclick="DeleteSubCourt('@item.subcourtModel.Id','@item.subcourtModel.Name')">Delete</button>
+                                </th>
+                            </tr>
+                        }
+                    }
+            </tbody>
+
+        </table>
+        @{
+            if (Model.SubCourtDetails != null && Model.SubCourtDetails.Count > 0)
+            {
+                foreach (var item in Model.SubCourtDetails)
+                {
+                    if (!item.subcourtModel.IsDeleted)
+                    {
+                        @*Detail Subcourt*@
+                        <div class="modal fade" id="@item.subcourtModel.Id" style="margin-top:0px">
+                            <div class="modal-dialog modal-fullscreen">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Detail</h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="tab1s">
+                                        <ul class="tab-link1s">
+                                            <li class="active"><a href="#schedule">Schedule</a></li>
+                                            @*<li><a href="#booking">Booking</a></li>*@
+                                        </ul>
+                                        <div class="tab-content" style="width:100%">
+                                            <div id="schedule" class="tab1 active">
+                                                <p>
+                                                    <div class="row">
+                                                        <div class="schedule-table">
+                                                            <table class="table bg-white">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th> </th>
+                                                                        <th>Monday</th>
+                                                                        <th>Tuesday</th>
+                                                                        <th>Wednesday</th>
+                                                                        <th>Thursday</th>
+                                                                        <th>Friday</th>
+                                                                        <th>Saturday</th>
+                                                                        <th>Sunday</th>
+
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    
+                                                                    @foreach (var sl in item.GroupSlotByTime)
+                                                                    {
+                                                                        
+                                                                        <tr>
+                                                                            <td class="day">@sl.Key</td>
+                                                                            @{
+                                                                                
+                                                                                var sss = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "monday").FirstOrDefault();
+                                                                                if (sss != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@sss.Id','@sss.price',@sss.IsActive.ToString().ToLower())">
+                                                                                    Price: @sss.price.ToString("#,###")
+                                                                                    @if(sss.IsActive==true){
+                                                                                            <p>Active</p>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                        <p>Inactive</p>
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+
+                                                                            @{
+                                                                                var ss3 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "tuesday").FirstOrDefault();
+                                                                                if (ss3 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss3.Id','@ss3.price',@ss3.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss3.price.ToString("#,###")
+                                                                                        @if (ss3.IsActive == true)
+                                                                                        {
+                                                                                            <p>Active</p>
+                                                                                            ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <p>Inactive</p>
+                                                                                            ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+
+                                                                            @{
+                                                                                var ss4 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "wednesday").FirstOrDefault();
+                                                                                if (ss4 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss4.Id','@ss4.price',@ss4.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss4.price.ToString("#,###")
+                                                                                        @if (ss4.IsActive == true)
+                                                                                        {
+                                                                                            <p>Active</p>
+                                                                                            ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <p>Inactive</p>
+                                                                                            ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+
+                                                                            @{
+                                                                                var ss5 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "thursday").FirstOrDefault();
+                                                                                if (ss5 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss5.Id','@ss5.price',@ss5.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss5.price.ToString("#,###")
+                                                                                        @if (ss5.IsActive == true)
+                                                                                        {
+                                                                                            <p>Active</p>
+                                                                                            ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <p>Inactive</p>
+                                                                                            ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+
+                                                                            @{
+                                                                                var ss6 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "friday").FirstOrDefault();
+                                                                                if (ss6 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss6.Id','@ss6.price',@ss6.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss6.price.ToString("#,###")
+                                                                                        @if (ss6.IsActive == true)
+                                                                                        {
+                                                                                            <p>Active</p>
+                                                                                            ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <p>Inactive</p>
+                                                                                            ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+
+                                                                            @{
+                                                                                var ss7 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "saturday").FirstOrDefault();
+                                                                                if (ss7 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss7.Id','@ss7.price',@ss7.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss7.price.ToString("#,###")
+                                                                                        @if(ss7.IsActive == true)
+                                                                                        {
+                                                                                        <p>Active</p>
+                                                                                        ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                        <p>Inactive</p>
+                                                                                        ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+                                                                            @{
+                                                                                var ss8 = sl.Value.Where(ite => ite.daysInSchedule.ToLower() == "sunday").FirstOrDefault();
+                                                                                if (ss8 != null)
+                                                                                {
+                                                                                    <th onclick="ShowModalEditSlot('@ss8.Id','@ss8.price',@ss8.IsActive.ToString().ToLower())">
+                                                                                        Price: @ss8.price.ToString("#,###")
+                                                                                        @if (ss8.IsActive == true)
+                                                                                        {
+                                                                                            <p>Active</p>
+                                                                                            ;
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <p>Inactive</p>
+                                                                                            ;
+                                                                                        }
+                                                                                    </th>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <th>
+                                                                                    </th>
+                                                                                }
+                                                                            }
+                                                                        </tr>
+                                                                    }
+                                                                    
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </p>
+
+                                            </div>
+@*
+                                                <table id="example" class="table table-striped" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Time Slot</th>
+                                                            <th>Customer</th>
+                                                            <th>Phone</th>
+                                                            <th>Book at</th>
+                                                            <th>Price</th>
+
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var book in item.bookingModel)
+                                                        {
+                                                            <tr>
+                                                                <th>@book.Id </th>
+                                                                <th>@book.TimeSlot</th>
+                                                                <th>@book.Customer</th>
+                                                                <th>@book.Phone</th>
+                                                                <th>@book.BookAt</th>
+                                                                <th>@book.Price</th>
+
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+
+                                                </table>
+
+                            </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmDel()">OK</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        }
+
+
+       
+        @*Delete Subcourt*@
+        <div class="modal fade" id="delsubcourtmodal" style="margin-top:100px">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Warning!</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        `
+                    </div>
+
+                    <div class="modal-body" id="nameSubCourtDel">
+                        Are you sure to delete subcourt <span></span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmSCDel()">OK</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @*Update Slot schedule*@
+        <div class="modal fade" id="editslot" style="margin-top:100px">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Slot Schedule</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-4">Price: </div>
+                            <div class="col-4">
+                                <input type="text" id="priceslot" step="1.0" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">Active: </div>
+                            <div class="col-4">
+                                <label class="dropdownc">
+
+                                    <div class="dd-button" id="statusSl">
+                                        <span>true</span>
+                                    </div>
+
+                                    <input type="checkbox" class="dd-input" id="test">
+
+                                    <ul class="dd-menu">
+                                        <li onclick="SetStatusSlot('true')">true</li>
+                                        <li onclick="SetStatusSlot('false')">false</li>
+                                    </ul>
+
+                                </label>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmEditSlot()">OK</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @*Create New Subcourt*@
+        <div class="modal fade" id="createscourtmodal" style="margin-top:20px">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create Subcourt</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body" id="1" style="padding: 0 11px 0 11px">
+                        <div>
+                            <label class="small mb-1" for="nameSCCreate">Name</label>
+                            <input class="form-control" id="nameSCCreate" type="text" placeholder="Enter subcourt's name" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-body" id="2" style="padding: 0 11px 0 11px">
+                        <div>
+                            <label class="small mb-1" for="courttypeID">Court Type ID</label>
+                            <select class="form-control" id="courttypeID">
+                                <option value="1">Acrylic</option>
+                                <option value="2">Silicon PU</option>
+                                <option value="3">Wooden</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-body" id="3" style="padding: 0 11px 0 11px">
+                        <div>
+                            <label class="small mb-1" for="SCisactive">Status</label>
+                            <select class="form-control" id="SCisactive">
+                               <option value="true">Active</option>
+                               <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-body" id="4" style="padding: 0 11px 0 11px">
+                        <div>
+                            <label class="small mb-1" for="SCisdelete">Is Delete</label>
+                            <select class="form-control" id="SCisdelete">
+                                <option value="false">False</option>
+                                <option value="true">True</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkCreate()" onclick="CreateSC()">Create</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="Cancel">Cancel</button>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+        @using (Html.BeginForm("ManageYard", "Owner", FormMethod.Post))
+        {
+            <button class="btn btn-success" type="submit">
+                Back to Court List
+            </button>
+        }
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.tab1s .tab-link1s a').on('click', function (e) {
+                var currentAttrValue = $(this).attr('href');
+
+                // Show/Hide Tabs
+                $('.tab1s ' + currentAttrValue).fadeIn(400).siblings().hide();
+                // Change/remove current tab to active
+                $(this).parent('li').addClass('active').siblings().removeClass('active');
+
+                e.preventDefault();
+
+
+            });
+        });
+    </script>
+</section>

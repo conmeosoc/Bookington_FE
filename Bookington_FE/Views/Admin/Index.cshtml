@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Admin";
+    Layout = "_LayoutAdminPage";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model AuthLoginResponse;
+<section>
+    <div class="tabcontent">
+        <div id="Index" class="clearfix" style="display:block">
+            <h1>Welcome Admin: @Model.result.fullName</h1>
+            <img src="/asset/images/badminton-abstract-concept-vector-illustration-2g293wp.jpg" width="50%" height="50%">
+            
+        </div>
+    </div>
+</section>
+
+

@@ -1,0 +1,379 @@
+﻿@{
+    ViewData["Title"] = "ManageCourt";
+    Layout = "_LayoutOwner";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model CourtResponse
+<link rel="stylesheet" href=@Url.Content("~/Asset/css/OwnerDropdown.css")>
+
+
+<section>
+    <div id="ManageYard" class="tabcontent" style="display:block">
+        <h3>Manage Court</h3>
+        <button class="btn btn-primary" style="padding: 5px; margin-bottom:10px" onclick="showCreateCourt()">Add a new court</button>
+        @*<div class="input-group" style="width:30%">
+            <input type="search" id="searchCourtTxt" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            <button type="button" class=" btn btn-dark" onclick="btnSearchCourtClick()">search</button>
+        </div>*@
+        <div class="row">
+            <div class="col-9">Total court: @Model.pagination.totalCount</div>
+            <div class="col-2">Page Size:</div>
+            @*<div class="col-1" style="margin-left:-100px">
+                <input type="number" id="selectPagesize" value="@Model.pagination.maxPageSize" style="max-width: 40px; text-align:center" />
+            </div>*@
+            <div class="col-1" style="margin-left:-100px">
+                <label class="dropdownc">
+
+                    <div class="dd-button" id="pageSizeLab">
+                        <span>@Model.pagination.maxPageSize</span>
+                    </div>
+
+                    <input type="checkbox" class="dd-input" id="test">
+
+                    <ul class="dd-menu">
+                        <li onclick="SetPageSize(5)">5</li>
+                        <li onclick="SetPageSize(10)">10</li>
+                        <li onclick="SetPageSize(15)">15</li>
+                    </ul>
+
+                </label>
+            </div>
+        </div>
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    @*<th>Address</th>*@
+                    <th>Open at</th>
+                    <th>Close at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.result != null && Model.result.Count > 0)
+                    @foreach (var item in Model.result)
+                    {
+                        @if (!item.IsDeleted)
+                        {
+                            <tr>
+                                <th>@item.Id</th>
+                                <th>@item.Name</th>
+                                @*<th>@item.Address</th>*@
+                                <th>@item.OpenAt</th>
+                                <th>@item.CloseAt</th>
+                                <th>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <button class="btn btn-primary" onclick="UpdateCourt('@item.Id','@item.OwnerId')">Edit</button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-danger" onclick="DeleteCourt('@item.Id','@item.Name')">Delete</button>
+                                        </div>
+                                        <div class="col-4">
+                                            @using (Html.BeginForm("SubCourt", "Owner", new { courtID = item.Id }, FormMethod.Post))
+                                            {
+                                                <button class="btn btn-success" type="submit">
+                                                    Detail
+                                                </button>
+                                            }
+                                        </div>                                        
+                                    </div>
+                                    
+
+                                </th>
+
+                            </tr>
+                        }
+                    }
+            </tbody>
+
+        </table>
+        <nav aria-label="Page navigation example" style="background :#ffffff; margin:0; position:relative">
+            <ul class="pagination">
+                @if (Model.pagination.hasPrevious)
+                {
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" onclick="btnPreviousClick()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                }
+                @if (Model.pagination.totalCount > 0)
+                {
+                    int totalPage = Model.pagination.totalPages;
+                    int curPage = Model.pagination.currentPage;
+                    int pageshow = 0;
+                    int preMaxPage = 0;
+                    int nextMaxPage = 0;
+                    //
+                    if (!Model.pagination.hasPrevious)
+                    {
+                        preMaxPage = 1;
+                        if (totalPage - 3 > 0)
+                            nextMaxPage = 3;
+                        else
+                            nextMaxPage = totalPage;
+                    }
+                    else
+                    {
+                        if (Model.pagination.hasNext)
+                        {
+                            preMaxPage = curPage - 1;
+                            nextMaxPage = curPage + 1;
+                        }
+                        else
+                        {
+                            nextMaxPage = totalPage;
+                            preMaxPage = totalPage - 2;
+                        }
+                    }
+                    for (int i = preMaxPage; i <= nextMaxPage; i++)
+                    {
+                        if (i == curPage)
+                        {
+                            <li class="page-item"><button class="page-link" style="color:red" onclick="btnNumbpageClick(@i)">@i</button></li>
+                        }
+                        else
+                        {
+                            <li class="page-item"><button class="page-link" onclick="btnNumbpageClick(@i)">@i</button></li>
+                        }
+                        pageshow++;
+                    }
+
+                }
+
+                @if (Model.pagination.hasNext)
+                {
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" onclick="btnNextClick()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</section>
+<div class="modal fade" id="delcourtmodal" style="margin-top:100px">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Warning!</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                `
+            </div>
+
+            <div class="modal-body" id="nameCourtDel">
+                Are you sure to delete court <span></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmCDel()">OK</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="upcourtmodal" style="margin-top:20px">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Court</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                `
+            </div>
+            
+            
+            <div class="modal-body" id="NewProvinceId" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtProvince">Province</label>
+                    <select class="form-control" onchange="SetDistrictup()" id="selectProvinceup">
+                        @foreach (var ite in ViewData["province"] as IList<ProvinceInfo>)
+                        {
+                            <option value="@ite.id">@ite.provinceName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-body" id="NewDistrictId" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="districtselectup">District</label>
+                    <select class="form-control" id="districtselectup">
+                    </select>
+                </div>
+            </div>
+            <div class="modal-body" id="1" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtName">Name</label>
+                    <input class="form-control" id="inputUpCourtName" type="text" placeholder="Enter court's name" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="2" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtAddress">Address</label>
+                    <input class="form-control" id="inputUpCourtAddress" type="text" placeholder="Enter court's address" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="3" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtDescription">Description</label>
+                    <input class="form-control" id="inputUpCourtDescription" type="text" placeholder="Enter court's description" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="4" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtOpen">Open Time</label>
+                    <input class="form-control" id="inputUpCourtOpen" type="text" placeholder="Enter court's open time" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="5" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtClose">Close Time</label>
+                    <input class="form-control" id="inputUpCourtClose" type="text" placeholder="Enter court's close time" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="6" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="form-label" for="formFileMultipleup">Court Images</label>
+                    <input class="form-control" type="file" id="formFileMultipleup" multiple />
+                    
+                    </script>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkUpdate" onclick="UpdateC()">OK</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="Cancel">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="createcourtmodal" style="margin-top:20px">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Court</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                `
+            </div>
+
+            <div class="modal-body" id="nameCourtUpdate" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputNewCourtName">Name</label>
+                    <input class="form-control" id="inputNewCourtName" type="text" placeholder="Enter court's name" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="NewProvinceId" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtProvince">Province</label>
+                    <select class="form-control" onchange="SetDistrict()" id="selectProvince">
+                        @foreach (var ite in ViewData["province"] as IList<ProvinceInfo>)
+                        {
+                            <option value="@ite.id">@ite.provinceName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-body" id="NewDistrictId" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputUpCourtDistrict">District</label>
+                    <select class="form-control" id="districtselect">
+                    </select>
+                </div>
+            </div>
+            <div class="modal-body" id="NewAddress" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputCreateCourtAddress">Address</label>
+                    <input class="form-control" id="inputCreateCourtAddress" type="text" placeholder="Enter court's address" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="description" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputCreateCourtdescription">Description</label>
+                    <input class="form-control" id="inputCreateCourtdescription" type="text" placeholder="Enter court's description" value="">
+                </div>
+            </div>
+            
+            
+            
+            <div class="modal-body" id="OpenCourtCreatedate" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputCreateCourtOpen">Open Time</label>
+                    <input class="form-control" id="inputCreateCourtOpen" type="text" placeholder="Enter court's open time" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="CloseCourtCreatedate" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="small mb-1" for="inputCreateCourtClose">Close Time</label>
+                    <input class="form-control" id="inputCreateCourtClose" type="text" placeholder="Enter court's close time" value="">
+                </div>
+            </div>
+            <div class="modal-body" id="CloseCourtCreatedate" style="padding: 0 11px 0 11px">
+                <div>
+                    <label class="form-label" for="formFileMultiple">Court Images</label>
+                    <input class="form-control" type="file" id="formFileMultiple" multiple />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkCreate()" onclick="CreateC()">Create</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="Cancel">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="subcourtmodal" style="margin-top:100px">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Court Detail</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                `
+            </div>
+
+            <div class="modal-body" id="nameCourtDel">
+                <table id="example" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Sub Court Name</th>
+                            <th>Time Open</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>123</th>
+                            <th>12:00:00</th>
+                        </tr>
+                        <tr>
+                            <th>123</th>
+                            <th>12:00:00</th>
+                        </tr>
+                        <tr>
+                            <th>123</th>
+                            <th>12:00:00</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmCDel()">OK</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@if (Model.pagination.totalCount > 0)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            SetPageNumAndSize(@Model.pagination.currentPage, @Model.pagination.maxPageSize);
+        };
+    </script>
+}

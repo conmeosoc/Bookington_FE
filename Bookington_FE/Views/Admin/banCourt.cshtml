@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "HanldeCourtReport";
+    Layout = "_LayoutAdminPage";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model List<CourtReportResponseWriteDTO>
+<section>
+    @foreach (var item in Model)
+    {
+        
+    <div class="row">
+        <div class="col-4">Content: </div>
+        <div class="col-4">
+            <input type="text" id="courtbanid" value="@item.Content" />
+        </div>
+    </div>
+    <div>
+        <select id="isban">
+            <option value="none" selected disabled hidden>@item.IsBanned</option>
+            <option value="1">True</option>
+            <option value="2">False</option>
+            
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-4">duration: </div>
+        <div class="col-4">
+            <input type="number" id="courtbandur" value="@item.Duration"/>
+        </div>
+    </div>
+    }
+
+</section>

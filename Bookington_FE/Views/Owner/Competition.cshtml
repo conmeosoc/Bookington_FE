@@ -1,0 +1,142 @@
+﻿@{
+    ViewData["Title"] = "Competition";
+    Layout = "_LayoutOwner";
+}
+
+<div id="Competition" class="tabcontent" style="display:block">
+
+    <h1> HELLO</h1>
+	<div class="input-group" style="width:30%">
+		<input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+		<button type="button" class=" btn btn-dark">search</button>
+	</div>
+	<table id="example" class="table table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tournament Name</th>
+				<th>Court</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>a</th>
+				<th>b</th>
+				<th>c</th>
+				<th>
+					<button class="btn btn-success" onclick="DetailCompe('1')">Details</button>
+				</th>
+			</tr>
+			<tr>
+				<th>a</th>
+				<th>b</th>
+				<th>c</th>
+				<th>
+					<button class="btn btn-success" onclick="DetailCompe('2')">Details</button>
+				</th>
+			</tr>
+			<tr>
+				<th>a</th>
+				<th>b</th>
+				<th>c</th>
+				<th>
+					<button class="btn btn-success" onclick="DetailCompe('3')">Details</button>
+				</th>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>
+<div class="modal fade" id="detailcompe" style="margin-top:100px">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Competition Detail</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				`
+			</div>
+
+			<div class="modal-body" id="nameCourtDel">
+				<table id="example" class="table table-striped" style="width:100%">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Team 1</th>
+							<th>1</th>
+						</tr>
+						<tr>
+							<th>Team 2</th>
+							<th>2</th>
+						</tr>
+					</tbody>
+				</table>
+				<table id="example" class="table table-striped" style="width:100%">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Team 1</th>
+							<th>1</th>
+						</tr>
+						<tr>
+							<th>Team 2</th>
+							<th>2</th>
+						</tr>
+					</tbody>
+				</table>
+				<table id="example" class="table table-striped" style="width:100%">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Team 1</th>
+							<th>1</th>
+						</tr>
+						<tr>
+							<th>Team 2</th>
+							<th>2</th>
+						</tr>
+					</tbody>
+				</table>
+				<table id="example" class="table table-striped" style="width:100%">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Team 1</th>
+							<th>1</th>
+						</tr>
+						<tr>
+							<th>Team 2</th>
+							<th>2</th>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="Close">Close</button>
+			</div>
+		</div>
+
+	</div>
+</div>

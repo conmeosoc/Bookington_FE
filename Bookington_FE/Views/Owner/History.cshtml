@@ -1,0 +1,58 @@
+﻿
+@{
+	ViewData["Title"] = "History";
+	Layout = "_LayoutOwner";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model transactionResponse
+
+<section>
+	<div id="History" class="tabcontent" style="display:block">
+	<h1>Transaction</h1>
+	
+		@*<div class="input-group" style="width:30%">
+			<input type="search"  class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+			<button type="button" class=" btn btn-dark" >search</button>
+		</div>*@
+	<table id="example" class="table table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>From</th>
+				<th>To</th>
+				<th>Reason</th>
+				<th>Create at</th>
+				<th>Amount</th>
+            </tr>
+		</thead>
+		<tbody>
+                @if (Model.result != null && Model.result.Count > 0)
+                    @foreach (var item in Model.result)
+                    {
+                            <tr>
+                                <th>@item.Id</th>
+                                <th>@item.FromUsername</th>
+                                <th>@item.ToUsername</th>
+                                <th>@item.Reason</th>
+                                <th>@item.CreateAt</th>
+                                <th>
+								@if (item.Amount > 0)
+								{
+									<p style="color:green">@item.Amount</p>;
+								}
+								else
+								{
+									<p style="color:red">@item.Amount</p>
+								}
+							</th>
+                                
+
+                            </tr>
+                        }
+                    
+		
+		</tbody>
+	</table>
+        
+	</div>
+</section>

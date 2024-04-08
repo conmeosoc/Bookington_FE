@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewData["Title"] = "ManagerCourtReport";
+	Layout = "_LayoutAdminPage";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model CourtReportResponse
+<section>
+<div id="ManageCourtReport" class="tabcontent" style="display:block">
+			  <h3>Manage Report</h3>
+			  <table id="example" class="table table-striped" style="width:100%">
+					  <thead>
+						  <tr>
+							  <th>ID</th>
+							  <th>Court Name</th>
+							  <th>Reporter Phone</th>
+							  <th>Reporter Name</th>
+							  <th>Content</th>
+							  <th>Status</th>
+							  <th>Is response</th>
+							  <th>Action</th>
+						  </tr>
+					  </thead>
+					  <tbody>
+				@foreach (var item in Model.result)
+                        {
+                                <tr>
+                                  <th>@item.Id</th>
+                                  <th>@item.CourtName</th>
+                                  <th>@item.ReporterPhone</th>
+								  <th>@item.ReporterName</th>
+								  <th>@item.Content</th>
+                                  <th>
+										@if(item.IsBan == true)
+										{
+											<p>Banned</p>
+										}
+										else
+										{
+											<p>Active</p>
+										}
+								  </th>
+								  <th>
+							@if (item.IsBan == true)
+										{
+											<p>Responded</p>
+										}
+										else
+										{
+											<p>Not Response</p>
+										}
+								  </th>
+								  <th>
+                            <button class="btn btn-primary" onclick="ShowModalBanC('@item.Id')"> Ban </button>
+								  </th>
+                                  
+								  
+								</tr>
+							}
+					  </tbody>
+					  
+				  </table>
+			</div>
+    <div class="modal fade" id="bancourt" style="margin-top:20px">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Court</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+				
+
+                
+                <div class="modal-body" id="1" style="padding: 0 11px 0 11px">
+                    <div>
+                        <label class="small mb-1" for="BanCContent">Content</label>
+                        <input class="form-control" id="BanCContent" type="text" placeholder="Enter reason" value="">
+                    </div>
+                </div>
+                
+                <div class="modal-body" id="3" style="padding: 0 11px 0 11px">
+                    <div>
+                        <label class="small mb-1" for="BanCduration">Duration</label>
+                        <input class="form-control" id="BanCduration" type="number" min="1" placeholder="Enter court ban duration" value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkUpdate" onclick="BanC()">OK</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="Cancel">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</section>

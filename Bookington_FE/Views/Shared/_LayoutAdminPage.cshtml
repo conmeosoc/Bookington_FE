@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        
+        /* The container <div> - needed to position the dropdown content */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            z-index: 1;
+        }
+
+            /* Links inside the dropdown */
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+                /* Change color of dropdown links on hover */
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1
+                }
+
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Change the background color of the dropdown button when the dropdown content is shown */
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+    </style>
+    <link rel="stylesheet" href=@Url.Content("~/Asset/css/style4.css")>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'" onerror="this.removeAttribute('data-rocket-async')" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sidebar" style="margin:0">
+            <h2>HELLO ADMIN</h2>
+
+            <div class="tab">
+                @using (Html.BeginForm("Dashboard", "Admin", FormMethod.Post))
+                {
+                    <button type="submit">
+                        <i class="fa-solid fa-table-columns"></i>
+                        Dashboard
+                    </button>
+                }
+                @using (Html.BeginForm("UserManager", "Admin", FormMethod.Post))
+                {
+                    <button type="submit">
+                        Manage Users
+                    </button>
+                }
+                <div class="dropdown">
+                    <button class="dropbtn">Report</button>
+                    <div class="dropdown-content">
+                        @using (Html.BeginForm("ManageCourtReport", "Admin", FormMethod.Post))
+                        {
+                            <button type="submit">
+                                Court Report
+                            </button>
+                        }
+                        @using (Html.BeginForm("ManageUserReport", "Admin", FormMethod.Post))
+                        {
+                            <button type="submit">
+                                Account Report
+                            </button>
+                        }
+                    </div>
+                </div>
+                @using (Html.BeginForm("Profile", "Admin", FormMethod.Post))
+                {
+                    <button type="submit">
+                        Profile
+                    </button>
+                }
+                
+
+
+                @using (Html.BeginForm("Logout", "Admin", FormMethod.Post))
+                {
+                    <button type="submit">
+                        Logout
+                    </button>
+                }
+
+            </div>
+        </div>
+
+        <div class="main_content">
+            @RenderBody()
+        </div>
+    </div>
+    <script type="text/javascript" src=@Url.Content("~/Asset/js/dashboard.js")></script>
+    <script type="text/javascript" src=@Url.Content("~/Asset/js/tab.js")></script>
+    <script type="text/javascript" src=@Url.Content("~/Asset/js/site.js")></script>
+    <script type="text/javascript" src=@Url.Content("~/Asset/js/jquery-2.1.4.min.js")></script>
+    @*    <script src=@Url.Content("~/lib/jquery/dist/jquery.min.js")></script>
+    <script src=@Url.Content("~/lib/jquery/dist/jquery.js")></script>*@
+    <script src=@Url.Content("~/Asset/lib/bootstrap/dist/js/bootstrap.bundle.min.js")></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

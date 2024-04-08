@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "UserManager";
+    Layout = "_LayoutAdminPage";
+}
+@using Bookington_FE.Models.ResponseModel;
+@model AccountResponse
+<link rel="stylesheet" href=@Url.Content("~/Asset/css/OwnerDropdown.css")>
+
+<section>
+    <div id="ManageUsers" class="tabcontent" style="display:block">
+        <h3>Manage Users</h3>
+        @*<div class="input-group" style="width:30%">
+            <input type="search" id="searchCourtTxt" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            <button type="button" class=" btn btn-dark" onclick="btnSearchCourtClick()">search</button>
+        </div>*@
+        <div class="row">
+            <div class="col-9">Total court: @Model.pagination.totalCount</div>
+            <div class="col-2">Page Size:</div>
+            @*<div class="col-1" style="margin-left:-100px">
+            <input type="number" id="selectPagesize" value="@Model.pagination.maxPageSize" style="max-width: 40px; text-align:center" />
+            </div>*@
+            <div class="col-1" style="margin-left:-100px">
+                <label class="dropdownc">
+
+                    <div class="dd-button" id="pageSizeLab">
+                        <span>@Model.pagination.maxPageSize</span>
+                    </div>
+
+                    <input type="checkbox" class="dd-input" id="test">
+
+                    <ul class="dd-menu">
+                        <li onclick="SetPageSizeU(5)">5</li>
+                        <li onclick="SetPageSizeU(10)">10</li>
+                        <li onclick="SetPageSizeU(15)">15</li>
+                    </ul>
+
+                </label>
+            </div>
+        </div>
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Role Name</th>
+                    <th>Phone</th>
+                    <th>Date Of Birth</th>
+                    <th>Full Name</th>
+                    <th>Create At</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.result != null && Model.result.Count > 0)
+                    @foreach (var item in Model.result)
+                {
+                    @if(!item.IsDeleted)
+                    {
+                        <tr>
+                            <th>@item.Id</th>
+                            <th >                   
+                                <select id="role">
+                                        <option value="" selected="selected" hidden="hidden">@item.RoleName</option>
+
+                                    <option value="2">owner</option>
+                                    <option value="3">customer</option>
+                                </select>
+                                    <button class="btn-dark" onclick="changerole('@item.Id')">Change</button>  
+                            </th>
+                            <th>@item.Phone</th>
+                                <th>
+                                    @item.DateOfBirth.ToString("dd-MM-yyyy")
+                                    </th>
+                            <th>@item.FullName</th>
+
+                                <th>@item.CreateAt.ToString("dd-MM-yyyy")</th>
+                            @if (item.IsActive)
+                            {
+                                <th>Active</th>
+                            }
+                            else
+                            {
+                                <th>InActive</th>
+                            }
+                            <th>
+                                <button class="btn btn-danger" onclick="DeleteUser('@item.Id.Trim().Replace("\r","").Replace("\n","")','@item.FullName')">Delete</button>
+                            </th>
+                        </tr>
+                    }                    
+                }
+
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example" style="background :#ffffff; margin:0; position:relative">
+            <ul class="pagination">
+                @if (Model.pagination.hasPrevious)
+                {
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" onclick="btnPreviousClickU()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                }
+                @if (Model.pagination.totalCount > 0)
+                {
+                    int totalPage = Model.pagination.totalPages;
+                    int curPage = Model.pagination.currentPage;
+                    int pageshow = 0;
+                    int preMaxPage = 0;
+                    int nextMaxPage = 0;
+                    //
+                    if (!Model.pagination.hasPrevious)
+                    {
+                        preMaxPage = 1;
+                        if (totalPage - 3 > 0)
+                            nextMaxPage = 3;
+                        else
+                            nextMaxPage = totalPage;
+                    }
+                    else
+                    {
+                        if (Model.pagination.hasNext)
+                        {
+                            preMaxPage = curPage - 1;
+                            nextMaxPage = curPage + 1;
+                        }
+                        else
+                        {
+                            nextMaxPage = totalPage;
+                            preMaxPage = totalPage - 2;
+                        }
+                    }
+                    for (int i = preMaxPage; i <= nextMaxPage; i++)
+                    {
+                        if (i == curPage)
+                        {
+                            <li class="page-item"><button class="page-link" style="color:red" onclick="btnNumbpageClickU(@i)">@i</button></li>
+                        }
+                        else
+                        {
+                            <li class="page-item"><button class="page-link" onclick="btnNumbpageClickU(@i)">@i</button></li>
+                        }
+                        pageshow++;
+                    }
+
+                }
+
+                @if (Model.pagination.hasNext)
+                {
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" onclick="btnNextClick()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>    
+</section>
+<!--The Model show popup edit user-->
+<!-- Modal -->
+
+@*Delete User*@
+<div class="modal fade" id="delusermodal" style="margin-top:100px">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Warning!</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+`            </div>
+
+            <div class="modal-body" id="nameUserDel">
+                Are you sure to delete user <span></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="OkRemove" onclick="ConfirmDel()">OK</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="CancelRemove">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@if (Model.pagination.totalCount > 0)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            SetPageNumAndSizeU(@Model.pagination.currentPage, @Model.pagination.maxPageSize);
+        };
+    </script>
+    
+}
